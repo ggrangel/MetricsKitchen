@@ -14,20 +14,19 @@ GUI_PATH = Path(__file__).parents[1]
 
 
 class PyPushButton(QPushButton):
-
     def __init__(
-            self,
-            text="",
-            height=40,
-            minimum_width=50,
-            text_padding=55,
-            text_color="#C3CCDF",
-            icon_name="",
-            icon_color="#C3CCDF",
-            btn_color="#44475A",
-            btn_hover="#4F5368",
-            btn_pressed="#282A36FF",
-            is_active=False
+        self,
+        text="",
+        height=40,
+        minimum_width=50,
+        text_padding=55,
+        text_color="#C3CCDF",
+        icon_name="",
+        icon_color="#C3CCDF",
+        btn_color="#44475A",
+        btn_hover="#4F5368",
+        btn_pressed="#282A36FF",
+        is_active=False,
     ):
         super().__init__()
 
@@ -84,14 +83,16 @@ class PyPushButton(QPushButton):
         self.qp.setRenderHint(QPainter.Antialiasing)
         self.qp.setPen(Qt.NoPen)
 
-        self.rect = QRect(0, 0, self.minimum_width, self.height())  # container for the icon
+        self.rect = QRect(
+            0, 0, self.minimum_width, self.height()
+        )  # container for the icon
 
         self.draw_icon()
 
         self.qp.end()
 
     def draw_icon(self):
-        icon_path = GUI_PATH / 'images' / 'icons' / f'{self.icon_name}'
+        icon_path = GUI_PATH / "images" / "icons" / f"{self.icon_name}"
 
         icon = QPixmap(str(icon_path))
 
@@ -102,7 +103,7 @@ class PyPushButton(QPushButton):
         self.qp.drawPixmap(
             (self.rect.width() - icon.width()) / 2,
             (self.rect.height() - icon.height()) / 2,
-            icon
+            icon,
         )
 
         painter.end()
