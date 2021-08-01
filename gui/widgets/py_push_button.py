@@ -47,6 +47,11 @@ class PyPushButton(QPushButton):
 
         self.set_style()
 
+    def set_active(self, active: bool) -> None:
+        self.is_active = active
+
+        self.set_style()
+
     def set_style(self):
         default_style = f"""
         QPushButton {{

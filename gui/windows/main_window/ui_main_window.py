@@ -45,21 +45,21 @@ class UI_MainWindow:
         self.frameMenuTop.setMinimumHeight(40)
         self.frameMenuTop.setObjectName("frameMenuTop")
 
-        self.btnTemp1 = PyPushButton(text="Ocultar Menu", icon_name="icon_menu.svg")
+        self.btnToggle = PyPushButton(text="Ocultar Menu", icon_name="icon_menu.svg")
 
-        self.btnTemp2 = PyPushButton(
+        self.btnHome = PyPushButton(
             text="Página Inicial", is_active=True, icon_name="icon_home.svg"
         )
 
-        self.btnTemp3 = PyPushButton(text="Página 2", icon_name="icon_widgets.svg")
+        self.btnPage2 = PyPushButton(text="Página 2", icon_name="icon_widgets.svg")
 
         self.lytLeftMenuTop = QVBoxLayout(self.frameMenuTop)
         self.lytLeftMenuTop.setContentsMargins(0, 0, 0, 0)
         self.lytLeftMenuTop.setSpacing(0)
 
-        self.lytLeftMenuTop.addWidget(self.btnTemp1)
-        self.lytLeftMenuTop.addWidget(self.btnTemp2)
-        self.lytLeftMenuTop.addWidget(self.btnTemp3)
+        self.lytLeftMenuTop.addWidget(self.btnToggle)
+        self.lytLeftMenuTop.addWidget(self.btnHome)
+        self.lytLeftMenuTop.addWidget(self.btnPage2)
 
         # ---------- ---------- ---------- ---------- ---------- ---------- spacer
 
@@ -130,7 +130,7 @@ class UI_MainWindow:
         self.stackedPages.setStyleSheet("font-size: 12pt;" "color: #F8F8F2")
         self.ui_pages = Ui_AppPages()
         self.ui_pages.setupUi(self.stackedPages)
-        self.stackedPages.setCurrentWidget(self.ui_pages.page)  # initial page
+        self.stackedPages.setCurrentWidget(self.ui_pages.pageHome)  # initial page
 
         # ========== ========== ========== ========== ========== ========== bottom bar
 

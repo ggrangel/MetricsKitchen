@@ -5,10 +5,16 @@ Author: Gustavo B. Rangel
 Date: 28/07/2021
 
 """
+import os
+
 import numpy
+import pandas
 from matplotlib import pyplot
 from scipy.stats import norm
+from statsmodels.regression.linear_model import OLS
+from statsmodels.tools.tools import add_constant
 
+import matplotlib.pyplot as plt
 
 # def logit(p):
 #     if p == 1:
@@ -23,11 +29,11 @@ from scipy.stats import norm
 #     return Probit
 
 
-def logit(x):
-    return 1 / (1 + numpy.exp(-10 * x))
+def logit(x, alpha=1000):
+    return 1 / (1 + numpy.exp(-alpha * x))
 
 
-def is_treated(pr_treat, n=10_000):
+def is_treated(pr_treat, n=1_000):
     u = numpy.random.uniform(size=n)
 
     return pr_treat > u
@@ -47,39 +53,73 @@ def is_treated(pr_treat, n=10_000):
 
 delta = 0.3
 
-n = 10000
+n = 1000
 
-# p = numpy.linspace(0.01, 0.99, n)
+frame = pandas.DataFrame(columns=["Y", "RV", "is_treated", "error"])
 
-RV = numpy.linspace(-1, 1, n)  # running variable
-
-y = list(numpy.zeros(int(n / 2))) + list(numpy.ones(int(n / 2)))
-
-# fig, axes = pyplot.subplots(nrows=2)
-# fig, ax = pyplot.subplots()
-
-# sharp_rdd = numpy.apply_along_axis(sharp, axis=0, arr=X)
-# fuzzy_rdd = numpy.apply_along_axis(fuzzy, axis=0, arr=X)
-# sharp_rdd = numpy.vectorize(sharp)
-# fuzzy_rdd = numpy.vectorize(fuzzy)
+frame["RV"] = numpy.linspace(-1, 1, n)  # running variable
 
 logit_vec = numpy.vectorize(logit)
 
-prob_T = logit_vec(RV)
+frame["is_treated"] = logit_vec(frame.RV)
 
-Y = numpy.random.randn(n)
+frame["error"] = numpy.random.randn(n)
 
-Y /= numpy.linalg.norm(Y)
-
-Y += delta * is_treated(prob_T)
+frame["Y"] = frame.RV + frame.is_treated + 0.5 * frame.error
 
 fig, ax = pyplot.subplots()
 
-ax.plot(RV, Y, marker="o", linestyle="")
+ax.plot(frame.RV, frame.Y, marker="o", linestyle="", alpha=0.1)
+
+before = frame[frame.RV < 0]
+after = frame[frame.RV > 0]
+
+ols_before = OLS(before.Y, add_constant(before.RV)).fit()
+ols_after = OLS(after.Y, add_constant(after.RV)).fit()
+
+last_point_before = ols_before.fittedvalues.values[-1]
+first_point_after = ols_after.fittedvalues.values[0]
+
+delta = first_point_after - last_point_before
+
+print(delta)
+
+ax.plot(before.RV, ols_before.fittedvalues, color="C1")
+ax.plot(after.RV, ols_after.fittedvalues, color="C1")
+
+x1, y1 = after.RV.values[0], first_point_after
+x2, y2 = before.RV.values[-1], last_point_before
+
+# ax.plot([x1, x2], [y1, y2], ".")
+connectionstyle = "bar, fraction=-0.3"
+arrow = ax.annotate(
+    "",
+    xy=(x1, y1),
+    xycoords="data",
+    xytext=(x2, y2),
+    textcoords="data",
+    arrowprops=dict(
+        arrowstyle="->",
+        color="C3",
+        shrinkA=5,
+        shrinkB=5,
+        patchA=None,
+        patchB=None,
+        connectionstyle=connectionstyle,
+        linestyle="dashed",
+    ),
+)
+
+ax.annotate(
+    rf"$\Delta=${round(delta, 2)}",
+    xy=(arrow.get_position()[0] - 0.3, (y1 + y2) / 2),
+    color="C3",
+    # xytext=arrow.get_position(),
+    # textcoords="data",
+)
+
 
 pyplot.show()
-
-
 # ax.plot(X, fuzzy_rdd(X), label='fuzzy')
 
 
